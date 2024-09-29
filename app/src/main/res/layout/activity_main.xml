@@ -8,7 +8,39 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Matrix Matcher"
+        android:text="Password Generator"
+        android:textSize="24sp"
+        android:padding="16dp"/>
+    <EditText
+        android:id="@+id/cidNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="4"
+        android:hint="Cid No"
+        />
+    <EditText
+        android:id="@+id/seNo"
+        android:hint="Serial No"
+        android:inputType="number"
+        android:maxLength="5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/generatePass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generated Password"
+        android:textSize="24sp"
+        android:padding="16dp"/>
+    <TextView
+        android:id="@+id/genPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
         android:textSize="24sp"
         android:padding="16dp"/>
 
