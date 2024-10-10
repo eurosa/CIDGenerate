@@ -132,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
                                 passView.setTextColor(Color.GREEN);
                             }else{
 
-                                passView.setText("System Error");
-                                passView.setTextColor(Color.RED);
+                                passView.setText("");
+                                //passView.setTextColor(Color.RED);
                             }
                         } else {
                             // The string is valid

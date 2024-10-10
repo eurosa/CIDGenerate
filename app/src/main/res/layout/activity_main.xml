@@ -3,33 +3,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:paddingTop="30dp"
+    android:gravity="top|center">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Password Generator"
         android:textSize="24sp"
-        android:padding="16dp"/>
-    <EditText
-        android:id="@+id/cidNo"
+        />
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:maxLength="4"
-        android:hint="Cid No"
-        />
-    <EditText
+        android:weightSum="2"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CID No"
+            android:textSize="24sp"
+            android:padding="16dp"/>
+        <EditText
+            android:id="@+id/cidNo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_marginEnd="6dp"
+            android:layout_marginStart="20dp"
+            android:maxLength="4"
+            android:hint="Cid No"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Serial No"
+            android:textSize="24sp"
+            android:padding="16dp"/>
+        <EditText
         android:id="@+id/seNo"
         android:hint="Serial No"
         android:inputType="number"
         android:maxLength="5"
+        android:layout_marginEnd="6dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    </LinearLayout>
     <Button
         android:id="@+id/generatePass"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:text="Generate Password"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
