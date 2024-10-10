@@ -42,6 +42,26 @@ public class MainActivity extends AppCompatActivity {
         serialNo =  findViewById(R.id.seNo);
         passView = findViewById(R.id.genPass);
         databaseManager = new DatabaseManager(this);
+
+        Cursor cursor = databaseManager.getData();
+
+        if (cursor != null && cursor.moveToFirst()) {  // Check if the cursor is not null and has data
+            do {
+                // Use getColumnIndexOrThrow for better error reporting
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String cid_no = cursor.getString(cursor.getColumnIndexOrThrow("cid_no"));
+                String cid_permission_code = cursor.getString(cursor.getColumnIndexOrThrow("cid_permission_code"));
+                cidNo.setText(cid_no);
+
+
+            } while (cursor.moveToNext());
+        }
+
+        // Close cursor to avoid memory leaks
+        if (cursor != null) {
+            cursor.close();
+        }
+
         int[][] matrixCenterId = {
 
                 /* 4th*/ {80, 55, 1234, 1111, 2200, 2499, 3333, 3999, 4444, 6565},
@@ -99,20 +119,28 @@ public class MainActivity extends AppCompatActivity {
                         // Use getColumnIndexOrThrow for better error reporting
                         int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                         String cid_no = cursor.getString(cursor.getColumnIndexOrThrow("cid_no"));
+                        String totalCid = cursor.getString(cursor.getColumnIndexOrThrow("total_cid"));
                         String cid_permission_code = cursor.getString(cursor.getColumnIndexOrThrow("cid_permission_code"));
 
-                        if (cid_no == null || cid_no.isEmpty() || cid_no.trim().isEmpty() || cid_no.equals(Integer.toString(totalCidNo))) {
+                        if (cid_no == null || cid_no.isEmpty() || cid_no.trim().isEmpty() || totalCid.equals(Integer.toString(totalCidNo))) {
                             // The string is either null, empty, only contains whitespaces, or equals "someValue"
-                            int rowsAffected = databaseManager.updateData(1, Integer.toString(totalCidNo));
-                            Toast.makeText(getApplicationContext(), "Rows Affected: " + rowsAffected, Toast.LENGTH_SHORT).show();
-                            int totalSerialNo = seValue1+seValue2+seValue3+seValue4+seValue5;
-                            passView.setText(""+(totalCidNo+totalSerialNo));
+                            int rowsAffected = databaseManager.updateData(1, cidNoInput,Integer.toString(totalCidNo));
+                            //Toast.makeText(getApplicationContext(), "Rows Affected: " + rowsAffected, Toast.LENGTH_SHORT).show();
+                            if(cid_permission_code.equals("1827")) {
+                                int totalSerialNo = seValue1 + seValue2 + seValue3 + seValue4 + seValue5;
+                                passView.setText("" + (totalCidNo + totalSerialNo));
+                                passView.setTextColor(Color.GREEN);
+                            }else{
+
+                                passView.setText("System Error");
+                                passView.setTextColor(Color.RED);
+                            }
                         } else {
                             // The string is valid
                             // Update an existing record
                             Toast.makeText(getApplicationContext(), "Not valid cid no", Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(getApplicationContext(), "ID: " + id + ", cid_no: " + cid_no + ", cid_permission_code: " + cid_permission_code, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "ID: " + id + ", cid_no: " + cid_no + ", cid_permission_code: " + cid_permission_code, Toast.LENGTH_SHORT).show();
                     } while (cursor.moveToNext());
                 }
 
@@ -189,7 +217,11 @@ public class MainActivity extends AppCompatActivity {
                     if (jsonObject.getString("status").equals("true")) {
 
                         String cidgenerate = jsonObject.getString("cidgenerate");
-                        Log.d("cidgenerate",""+cidgenerate);
+
+
+                        int rowsAffected = databaseManager.updateCIDPermissionData(1,cidgenerate);
+
+                        Log.d("cidgenerate",""+cidgenerate+" "+rowsAffected);
                         runOnUiThread(() -> {
                             // scrollTextViewLayout.addView(netTotlaTitleTextView);
                             //  scrolLayout.addView(netVolTextView);

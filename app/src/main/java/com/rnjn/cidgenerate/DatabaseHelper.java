@@ -16,12 +16,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Columns
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_CID_NO = "cid_no";
+    private static final String COLUMN_TOTAL_CID = "total_cid";
     private static final String COLUMN_PERMISSION_CODE = "cid_permission_code";
 
     // Create Table SQL
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
             COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_CID_NO + " TEXT, " +
+            COLUMN_TOTAL_CID + " TEXT, " +
             COLUMN_PERMISSION_CODE + " TEXT)";
 
     public DatabaseHelper(Context context) {
@@ -34,6 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Insert default row data
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_CID_NO, "");
+        contentValues.put(COLUMN_TOTAL_CID, "");
         contentValues.put(COLUMN_PERMISSION_CODE, 1827); // Example default values
         db.insert(TABLE_NAME, null, contentValues);
     }
