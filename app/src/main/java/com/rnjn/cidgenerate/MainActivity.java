@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private String get_report_url = "https://timxn.com/ecom/licencepermission/get_track_link.php";
@@ -85,6 +86,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 getIotData();
+                if (cidNo.getText() == null || cidNo.getText().toString().trim().isEmpty()) {
+                    // Return immediately if the input is null, empty, or only contains whitespaces
+                    return;
+                }
+
+                if (serialNo.getText() == null || serialNo.getText().toString().trim().isEmpty()) {
+                    // Return immediately if the input is null, empty, or only contains whitespaces
+                    return;
+                }
+
 
                 String cidNoInput = formatTo4Digits(cidNo.getText().toString());
                 String[] cidNo = splitDigits(cidNoInput);
@@ -128,7 +139,8 @@ public class MainActivity extends AppCompatActivity {
                             //Toast.makeText(getApplicationContext(), "Rows Affected: " + rowsAffected, Toast.LENGTH_SHORT).show();
                             if(cid_permission_code.equals("1827")) {
                                 int totalSerialNo = seValue1 + seValue2 + seValue3 + seValue4 + seValue5;
-                                passView.setText("" + (totalCidNo + totalSerialNo));
+                                int password = (totalCidNo + totalSerialNo);
+                                passView.setText(getString(R.string.score_text, password).substring(1));
                                 passView.setTextColor(Color.GREEN);
                             }else{
 
@@ -163,11 +175,17 @@ public class MainActivity extends AppCompatActivity {
 
     // Method to format a string to 4 digits, filling with spaces if needed
     private String formatTo4Digits(String input) {
+        return String.format(Locale.getDefault(),"%04d", Integer.parseInt(input));  // Left-align and pad with spaces
+    }
+    private String formatTo5Digits(String input) {
+        return String.format(Locale.getDefault(),"%05d", Integer.parseInt(input));  // Left-align and pad with spaces
+    }
+    /*private String formatTo4Digits(String input) {
         return String.format("%-4s", input);  // Left-align and pad with spaces
     }
     private String formatTo5Digits(String input) {
         return String.format("%-5s", input);  // Left-align and pad with spaces
-    }
+    }*/
     // Method to split the formatted string into individual digits
     private String[] splitDigits(String formattedInput) {
         return formattedInput.split("");  // Split into individual characters
