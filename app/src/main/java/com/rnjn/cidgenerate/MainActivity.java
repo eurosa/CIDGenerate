@@ -1,23 +1,39 @@
 package com.rnjn.cidgenerate;
 
+import android.annotation.SuppressLint;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-
+    private String get_report_url = "https://timxn.com/ecom/licencepermission/get_track_link.php";
     private static final String TAG = "MatrixMatcher";
     private Button passwordGenerator;
     private EditText cidNo, serialNo;
     private TextView passView;
-
+    private DatabaseManager databaseManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         cidNo = findViewById(R.id.cidNo);
         serialNo =  findViewById(R.id.seNo);
         passView = findViewById(R.id.genPass);
-
+        databaseManager = new DatabaseManager(this);
         int[][] matrixCenterId = {
 
                 /* 4th*/ {80, 55, 1234, 1111, 2200, 2499, 3333, 3999, 4444, 6565},
@@ -47,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         passwordGenerator.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                getIotData();
 
                 String cidNoInput = formatTo4Digits(cidNo.getText().toString());
                 String[] cidNo = splitDigits(cidNoInput);
@@ -73,8 +91,38 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Formatted cid No", value1+" "+value2+" "+value3+" "+value4 ); // Output: "[7,  ,  ,  ]"
                 Log.d("Formatted serial No", seValue1+" "+seValue2+" "+seValue3+" "+seValue4+" "+seValue5 ); // Output: "[7,  ,  ,  ]"
                 int totalCidNo = value1+value2+value3+value4;
-                int totalSerialNo = seValue1+seValue2+seValue3+seValue4+seValue5;
-                passView.setText(""+(totalCidNo+totalSerialNo));
+
+                Cursor cursor = databaseManager.getData();
+
+                if (cursor != null && cursor.moveToFirst()) {  // Check if the cursor is not null and has data
+                    do {
+                        // Use getColumnIndexOrThrow for better error reporting
+                        int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                        String cid_no = cursor.getString(cursor.getColumnIndexOrThrow("cid_no"));
+                        String cid_permission_code = cursor.getString(cursor.getColumnIndexOrThrow("cid_permission_code"));
+
+                        if (cid_no == null || cid_no.isEmpty() || cid_no.trim().isEmpty() || cid_no.equals(Integer.toString(totalCidNo))) {
+                            // The string is either null, empty, only contains whitespaces, or equals "someValue"
+                            int rowsAffected = databaseManager.updateData(1, Integer.toString(totalCidNo));
+                            Toast.makeText(getApplicationContext(), "Rows Affected: " + rowsAffected, Toast.LENGTH_SHORT).show();
+                            int totalSerialNo = seValue1+seValue2+seValue3+seValue4+seValue5;
+                            passView.setText(""+(totalCidNo+totalSerialNo));
+                        } else {
+                            // The string is valid
+                            // Update an existing record
+                            Toast.makeText(getApplicationContext(), "Not valid cid no", Toast.LENGTH_SHORT).show();
+                        }
+                        Toast.makeText(getApplicationContext(), "ID: " + id + ", cid_no: " + cid_no + ", cid_permission_code: " + cid_permission_code, Toast.LENGTH_SHORT).show();
+                    } while (cursor.moveToNext());
+                }
+
+                // Close cursor to avoid memory leaks
+                if (cursor != null) {
+                    cursor.close();
+                }
+
+
+
             }
 
         });
@@ -84,14 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Method to get a value from a specific row and column index.
-     *
-     * @param matrix The 2D matrix array.
-     * @param rowIndex The index of the row.
-     * @param columnIndex The index of the column.
-     * @return The value at the specified row and column.
-     */
+
     // Method to format a string to 4 digits, filling with spaces if needed
     private String formatTo4Digits(String input) {
         return String.format("%-4s", input);  // Left-align and pad with spaces
@@ -110,6 +151,62 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Invalid row or column index.");
             return -1; // Return a sentinel value to indicate an error
         }
+    }
+    public void getIotData() {
+
+
+        Thread sendThread = new Thread() {
+
+            private TennisAdapter tennisAdapter;
+
+            @SuppressLint("ResourceType")
+            public void run() {
+
+                RequestHandler rh = new RequestHandler();
+                HashMap<String, String> param = new HashMap<String, String>();
+                //Populate the request parameters
+                //param.put("from_date", fromDate);
+                //param.put("to_date", toDate);
+                String result=rh.sendPostRequest(get_report_url, param);
+                //pDialog.dismiss();
+                runOnUiThread(() -> {
+
+                });
+
+
+
+                try {
+
+                    // Parse the JSON string
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    // Access values
+                   // String status = jsonObject.getString("status");
+
+
+
+
+                    if (jsonObject.getString("status").equals("true")) {
+
+                        String cidgenerate = jsonObject.getString("cidgenerate");
+                        Log.d("cidgenerate",""+cidgenerate);
+                        runOnUiThread(() -> {
+                            // scrollTextViewLayout.addView(netTotlaTitleTextView);
+                            //  scrolLayout.addView(netVolTextView);
+                        });
+
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        };
+        Log.d("ajflkasj","idhf");
+        sendThread.start();
+
     }
 
 
