@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
@@ -27,14 +28,18 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private String get_report_url = "https://timxn.com/ecom/licencepermission/get_track_link.php";
+    private String send_data_url = "https://timxn.com/ecom/licencepermission/deviceidadd.php";
     private static final String TAG = "MatrixMatcher";
     private Button passwordGenerator;
     private EditText cidNo, serialNo;
     private TextView passView;
     private DatabaseManager databaseManager;
+    String androidID;
+    @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +47,22 @@ public class MainActivity extends AppCompatActivity {
         cidNo = findViewById(R.id.cidNo);
         serialNo =  findViewById(R.id.seNo);
         passView = findViewById(R.id.genPass);
-        databaseManager = new DatabaseManager(this);
+
+        try{
+            // Get Android ID (which is unique for each device)
+            androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+            // Log or use the Android ID
+            Log.d(TAG, "Device Android ID: " + androidID);
+        }catch (Exception ex){
+
+        }
+
+        databaseManager = new DatabaseManager(this, androidID);
+
+        try {
+            sendDeviceId(androidID);
+        }catch (Exception ex){}
 
         Cursor cursor = databaseManager.getData();
 
@@ -85,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                getIotData();
+                getIotData(androidID);
                 if (cidNo.getText() == null || cidNo.getText().toString().trim().isEmpty()) {
                     // Return immediately if the input is null, empty, or only contains whitespaces
                     return;
@@ -132,12 +152,13 @@ public class MainActivity extends AppCompatActivity {
                         String cid_no = cursor.getString(cursor.getColumnIndexOrThrow("cid_no"));
                         String totalCid = cursor.getString(cursor.getColumnIndexOrThrow("total_cid"));
                         String cid_permission_code = cursor.getString(cursor.getColumnIndexOrThrow("cid_permission_code"));
+                        String android_Id = cursor.getString(cursor.getColumnIndexOrThrow("androidID"));
 
                         if (cid_no == null || cid_no.isEmpty() || cid_no.trim().isEmpty() || totalCid.equals(Integer.toString(totalCidNo))) {
                             // The string is either null, empty, only contains whitespaces, or equals "someValue"
                             int rowsAffected = databaseManager.updateData(1, cidNoInput,Integer.toString(totalCidNo));
                             //Toast.makeText(getApplicationContext(), "Rows Affected: " + rowsAffected, Toast.LENGTH_SHORT).show();
-                            if(cid_permission_code.equals("1827")) {
+                            if(cid_permission_code.equals("1827") && Objects.equals(androidID, android_Id)) {
                                 int totalSerialNo = seValue1 + seValue2 + seValue3 + seValue4 + seValue5;
                                 int password = (totalCidNo + totalSerialNo);
                                 passView.setText(getString(R.string.score_text, password).substring(1));
@@ -198,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
             return -1; // Return a sentinel value to indicate an error
         }
     }
-    public void getIotData() {
+    public void getIotData(String androidID) {
 
 
         Thread sendThread = new Thread() {
@@ -211,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 RequestHandler rh = new RequestHandler();
                 HashMap<String, String> param = new HashMap<String, String>();
                 //Populate the request parameters
-                //param.put("from_date", fromDate);
+                param.put("androidID", androidID);
                 //param.put("to_date", toDate);
                 String result=rh.sendPostRequest(get_report_url, param);
                 //pDialog.dismiss();
@@ -235,11 +256,12 @@ public class MainActivity extends AppCompatActivity {
                     if (jsonObject.getString("status").equals("true")) {
 
                         String cidgenerate = jsonObject.getString("cidgenerate");
+                        String androidID = jsonObject.getString("androidID");
 
 
-                        int rowsAffected = databaseManager.updateCIDPermissionData(1,cidgenerate);
+                        int rowsAffected = databaseManager.updateCIDPermissionData(1,cidgenerate, androidID);
 
-                        Log.d("cidgenerate",""+cidgenerate+" "+rowsAffected);
+                        Log.d("cidgenerate","cidgenerate "+cidgenerate+" androidID "+androidID+" "+rowsAffected);
                         runOnUiThread(() -> {
                             // scrollTextViewLayout.addView(netTotlaTitleTextView);
                             //  scrolLayout.addView(netVolTextView);
@@ -259,5 +281,29 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void sendDeviceId(String androidID) {
+
+
+        Thread sendThread = new Thread() {
+
+            private TennisAdapter tennisAdapter;
+
+            @SuppressLint("ResourceType")
+            public void run() {
+
+                RequestHandler rh = new RequestHandler();
+                HashMap<String, String> param = new HashMap<String, String>();
+                //Populate the request parameters
+                param.put("androidID", androidID);
+                //param.put("to_date", toDate);
+                String result=rh.sendPostRequest(send_data_url, param);
+                //pDialog.dismiss();
+
+            }
+        };
+        Log.d("ajflkasj","idhf");
+        sendThread.start();
+
+    }
 
     }

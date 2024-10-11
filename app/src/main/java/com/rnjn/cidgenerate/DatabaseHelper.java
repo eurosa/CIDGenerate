@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     // Database Name and Version
@@ -17,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_CID_NO = "cid_no";
     private static final String COLUMN_TOTAL_CID = "total_cid";
+    private static final String COLUMN_ANDROID_ID = "androidID";
     private static final String COLUMN_PERMISSION_CODE = "cid_permission_code";
 
     // Create Table SQL
@@ -24,10 +26,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_CID_NO + " TEXT, " +
             COLUMN_TOTAL_CID + " TEXT, " +
+            COLUMN_ANDROID_ID + " TEXT, " +
             COLUMN_PERMISSION_CODE + " TEXT)";
+    private final String androidID;
 
-    public DatabaseHelper(Context context) {
+    public DatabaseHelper(Context context, String _androidID) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        androidID = _androidID;
     }
 
     @Override
@@ -37,6 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_CID_NO, "");
         contentValues.put(COLUMN_TOTAL_CID, "");
+        contentValues.put(COLUMN_ANDROID_ID, androidID);
+        Log.d("androidIdinDB",""+androidID);
         contentValues.put(COLUMN_PERMISSION_CODE, 1827); // Example default values
         db.insert(TABLE_NAME, null, contentValues);
     }

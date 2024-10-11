@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class DatabaseManager {
+
     // Insert Data
     private DatabaseHelper dbHelper;
 
-    public DatabaseManager(Context context) {
-        dbHelper = new DatabaseHelper(context);
+    public DatabaseManager(Context context,String _androidID) {
+        dbHelper = new DatabaseHelper(context,_androidID);
+       // androidID = _androidID;
     }
 
     // Insert Data
@@ -31,6 +33,7 @@ public class DatabaseManager {
         ContentValues contentValues = new ContentValues();
         contentValues.put("cid_no", cid_no);
         contentValues.put("total_cid", total_cid);
+
         //contentValues.put("cid_permission_code", cid_permission_code);
 
         // Updating row where id = ?
@@ -38,11 +41,12 @@ public class DatabaseManager {
         db.close();
         return rowsAffected; // Number of rows updated
     }
-    public int updateCIDPermissionData(int id, String cid_permission_code) {
+    public int updateCIDPermissionData(int id, String cid_permission_code, String androidID) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put("cid_permission_code", cid_permission_code);
+        contentValues.put("androidID", androidID);
 
         // Updating row where id = ?
         int rowsAffected = db.update("MyTable", contentValues, "id = ?", new String[]{String.valueOf(id)});
