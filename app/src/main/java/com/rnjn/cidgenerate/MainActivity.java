@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
                             // The string is either null, empty, only contains whitespaces, or equals "someValue"
                             int rowsAffected = databaseManager.updateData(1, cidNoInput,Integer.toString(totalCidNo));
                             //Toast.makeText(getApplicationContext(), "Rows Affected: " + rowsAffected, Toast.LENGTH_SHORT).show();
+                            Log.d("my_data",""+cid_permission_code+" "+android_Id+" "+androidID);
                             if(cid_permission_code.equals("1827") && Objects.equals(androidID, android_Id)) {
                                 int totalSerialNo = seValue1 + seValue2 + seValue3 + seValue4 + seValue5;
                                 int password = (totalCidNo + totalSerialNo);
