@@ -1,6 +1,6 @@
 package com.rnjn.cidgenerate;
 
-import static androidx.core.content.ContextCompat.startActivity;
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +21,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.text.HtmlCompat;
+
 
 import java.util.ArrayList;
 

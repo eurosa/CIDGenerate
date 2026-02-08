@@ -1,6 +1,7 @@
 package com.rnjn.cidgenerate;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -19,7 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +31,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private String get_report_url = "https://timxn.com/ecom/licencepermission/get_track_link.php";
     private String send_data_url = "https://timxn.com/ecom/licencepermission/deviceidadd.php";
     private static final String TAG = "MatrixMatcher";
